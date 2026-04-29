@@ -67,7 +67,7 @@ Accuracy was the main metric chosen for evaluating models since all classes are 
 
 
 ### How to Run
-***Generating final model***: Download data from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#). Clone this repository, or download `BW_coloring.ipynb`. It is recommended to execute code virtually, such as with Google Colab, ensuring dependencies, such as `reload_data2.py`, are within the same/virtual directory. Run notebook and download .keras model files; XAI interpretations are built-in. Previous models can be trained and generated in the same way with their respective notebook(s).
+***Generating final model***: Download data from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#). Clone this repository, or download `BW_coloring.ipynb`. It is recommended to execute code virtually, such as with Google Colab, ensuring dependencies, such as `reload_data2.py`, are within the same/virtual directory. Run notebook and download .keras model and other output files; XAI interpretations are built-in. Previous models can be trained and generated in the same way with their respective notebook(s).
 
 
 ### Contents of Repository
@@ -89,7 +89,7 @@ Accuracy was the main metric chosen for evaluating models since all classes are 
 
 
 ### Software Setup / Requirements
-Google Colab was used for majority of model training for its computational processing resources. Visualizations were completed with matplotlib. Modelling and analysis was done through tensorflow, keras, numpy, and scikit-learn. Data organization was automated with the os, shutil, PIL, tqdm, and zipfile modules. Required and recommended modules are enumerated in `required.txt`.
+Google Colab was used for majority of model training for its computational processing resources. Visualizations were completed with matplotlib. Modelling and analysis was done through tensorflow, keras, numpy, and scikit-learn. Data organization was automated with the os, shutil, PIL, tqdm, and zipfile modules. Required and recommended modules are enumerated in `required.txt` as well as at the top of every notebook.
 
 
 ### Data Loading
