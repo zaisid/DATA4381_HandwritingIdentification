@@ -24,7 +24,7 @@ This repository holds an attempt to apply transfer learning techniques and convo
 * **notebooks**: contains current code progress
   * **previous work**: subfolder containing initial modelling attempts; full documentation can be found in [this repository](https://github.com/zaisid/DATA4380_Vision)
 * **data**: contains metadata, modules, and select model-specific test set data
-* **images**: contains graphs and visualizations generated throughout pipeline, including loss/accuracy curves and Grad-CAM maps
+* **images**: contains graphs and visualizations generated throughout pipeline, including loss/accuracy curves, test outputs, and Grad-CAM maps
 * **models**: contains select models trained throughout different stages of the pipeline; majority are MobileNetV2 architectures
   * `AllClass5_bw.keras`: "final" model trained and tested on black & white color-graded images
   * `AllClass7_noPHR.keras`: updated version of `AllClass5_bw.keras` with smaller training/testing volume after removal of short prompts ("PHR") from dataset
