@@ -14,7 +14,7 @@ Handwriting author identification is important in forensic science, fraud detect
 
 * Source: [CSAFE Handwriting Database Version 5](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#)
 * Type: image data, scans of handwriting samples; .CSV file containing metadata on each writer is also included when downloading the data.
-* Size: approx. 5GB 
+* Size: approx. 5GB, though data was split into 4 zip files of approx. 1GB each to comply with Colab data upload limitations
 * Instances: 12,825 images
   * 475 classes (authors), 27 images each
   * Each class is organized as such:
@@ -26,7 +26,15 @@ Handwriting author identification is important in forensic science, fraud detect
  
 ### Data Preprocessing
 
+Majority of preprocessing involved directory management and organizing image data dumped from downloaded zip files into writer sub directories, and further nesting writer sub-directories in stratified random train/validation/test splits. Minor augmentations were attempted at separate stages of the pipeline (random crop), though were each time rejected since they negatively affected performance. Image-level preprocessing used in late-stage models:
+* Padding or cropping white space from the bottom of images to make them square
+  * This was to prevent stretching/compression that would occur when the image was non-square
+  * The bottom of the image usually held the most empty/white space, so this method did not observably cut off any handwritten text
+* Preemptively downsizing to the model-required resolution (usually 384×384)
+* Black & White color grading; hard-coding each pixel to be black or white based on a set threshold
+  * Mid-stage models' Grad-CAM showed overreliance on margins and whitespace, so to mitigate the possiblility of shadows or other artifacting, all images were converted to this color binary
 
+All preprocessing steps were performed on all images, including testing images, since these are quality-based and cleaning steps. There is no conceivable source of data leakage that would usually prevent preprocessing steps from being applied to validation and test sets.
 
 ### Exploratory Data Analysis (EDA)
 
