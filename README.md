@@ -62,12 +62,13 @@ Accuracy was the main metric chosen for evaluating models since all classes are 
 
 ### Future Work
 
+As, in its current form, the setup of the pipeline makes it a closed-set problem (i.e., writers outside of the training set cannot be predicted without additional appropriate training data), shifting focus from CNNs to Siamese Neural Networks (SNNs) is the next frame of focus. SNNs are designed to take two inputs and compare them against each other, and with all that was learned from the current pipeline regarding data cleaning and proper image handling specific to handwriting analysis, this would be the natural progression to testing the utility of deep learning and AI applications in digital forensics and other such spheres, and "opening" this problem (i.e., making it more generalizable). Other aspects to dive deeper into are more extreme augmentations and image processing steps. Augmentations have not been applied to any finalized models since, whenever executed, they worsened performance. However, applying different forms of augmentation (such as cropping to focus on words or letters rather than entire paragraphs) is yet to be tested. This would also serve to yield more data and inflate the training set.
+
 
 ## Repository Structure Explanation
 
-
 ### How to Run
-***Generating final model***: Download data from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#). Clone this repository, or download `BW_coloring.ipynb`. It is recommended to execute code virtually, such as with Google Colab, ensuring dependencies, such as `reload_data2.py`, are within the same/virtual directory. Run notebook and download .keras model and other output files; XAI interpretations are built-in. Previous models can be trained and generated in the same way with their respective notebook(s).
+**Generating final model**: Download data from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#). Clone this repository, or download `BW_coloring.ipynb`. It is recommended to execute code virtually, such as with Google Colab, ensuring dependencies, such as `reload_data2.py`, are within the same/virtual directory. Run notebook and download .keras model and other output files; XAI interpretations are built into this notebook. Previous models can be trained and generated in the same way with their respective notebook(s).
 
 
 ### Contents of Repository
