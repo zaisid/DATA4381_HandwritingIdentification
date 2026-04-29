@@ -70,6 +70,16 @@ As, in its current form, the setup of the pipeline makes it a closed-set problem
 ### How to Run
 **Generating final model**: Download data from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#). Clone this repository, or download `BW_coloring.ipynb`. It is recommended to execute code virtually, such as with Google Colab, ensuring dependencies, such as `reload_data2.py`, are within the same/virtual directory. Run notebook and download .keras model and other output files; XAI interpretations are built into this notebook. Previous models can be trained and generated in the same way with their respective notebook(s).
 
+**Deployment**: Two deployment versions are available: `475class_deployment.py` showcases a model trained on all authors and `90class_deployment.py` showcases a subset of authors with a higher accuracy model. Both versions require the same dependencies enumerated in `requirements.txt`. Clone this repository, install the dependencies, and run either script locally. CLI command shown below:
+
+```
+git clone https://github.com/[zaisid OR your-username]/DATA4381_HandwritingIdentification/
+cd DATA4381_HandwritingIdentification
+pip install -r requirements.txt
+cd deployment
+streamlit run [deployment.py file of choice]
+```
+
 
 ### Contents of Repository
 * **notebooks**: contains current code progress
