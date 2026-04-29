@@ -36,6 +36,7 @@ This repository holds an attempt to apply transfer learning techniques and convo
   * `EfficientNet.keras`: baseline model from earliest stages of the project
 * **presentations**: contains all presentations (i.e., slides and posters) made on this project
 * **results**: contains loss and accuracy data over epochs for all trained models as .CSV files
+* `requirements.txt`: lists recommended modules for executing pipeline
 
 
 ### Software Setup
