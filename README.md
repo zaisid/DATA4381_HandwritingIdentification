@@ -29,10 +29,9 @@ This repository holds an attempt to apply transfer learning techniques and convo
   * `AllClass5_bw.keras`: "final" model trained and tested on black & white color-graded images
   * `AllClass7_noPHR.keras`: updated version of `AllClass5_bw.keras` with smaller training/testing volume after removal of short prompts ("PHR") from dataset
   * `HighRes3.keras`: 90-class "final" model trained similarly as `AllClass5_bw.keras`
-  * demographic models
-    * `MobileNetV2_age.keras`: early model where target variable was *age* rather than authorship
-    * `MobileNetV2_hand.keras`: early model where target variable was *handedness* rather than authorship
-    * `MobileNetV2_gender.keras`: early model where target variable was *gender* rather than authorship
+  * `MobileNetV2_age.keras`: early model where target variable was *age* rather than authorship
+  * `MobileNetV2_hand.keras`: early model where target variable was *handedness* rather than authorship
+  * `MobileNetV2_gender.keras`: early model where target variable was *gender* rather than authorship
   * `EfficientNet.keras`: baseline model from earliest stages of the project
 * **presentations**: contains all presentations (i.e., slides and posters) made on this project
 * **results**: contains loss and accuracy data over epochs for all trained models as .CSV files
