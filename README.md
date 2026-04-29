@@ -43,7 +43,7 @@ Handwriting author identification is important in forensic science, fraud detect
   * Epochs: 70-100
   * Batch Size: 64
   * Image Size: 384×384
-  * Learning Rate: Default Adam optimizer (1e-3)
+  * Learning Rate: default Adam optimizer (1e-3)
   * GPU: A100 GPU provided by Google Colab
 
 ## Results
