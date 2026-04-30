@@ -82,9 +82,9 @@ As, in its current form, the setup of the pipeline makes it a closed-set problem
 
 **Deployment**: Two browser-based local deployment versions are available.
 *  `475class_deployment.py` showcases a model trained on all authors
-*  `90class_deployment.py` showcases a subset of authors with a higher accuracy model. Both versions require the same dependencies enumerated in `requirements.txt`
+*  `90class_deployment.py` showcases a subset of authors with a higher accuracy model
 
-Clone this repository, install the dependencies, and run either script locally. CLI command shown below:
+Both versions require the same dependencies, enumerated in `requirements.txt`. Clone this repository, install the required modules, and run either script locally. CLI command shown below:
 
 ```
 git clone https://github.com/[your-username]/DATA4381_HandwritingIdentification/
