@@ -111,7 +111,6 @@ streamlit run [deployment.py file of choice]
 * **presentations**: contains all presentations (i.e., slides and posters) made on this project
 * **results**: contains loss and accuracy data over epochs for all trained models as .CSV files
 * **deployment**: contains deployment scripts and extra files necessary for running them
-  * *NOT INCLUDED IN PUBLIC REPOSITORY (COMING SOON)*
 * `requirements.txt`: lists required modules for deployment scripts
 
 
