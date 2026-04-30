@@ -34,7 +34,9 @@ Majority of preprocessing involved directory management and organizing image dat
 * Black & White color grading; hard-coding each pixel to be black or white based on a set threshold
   * Mid-stage models' Grad-CAM showed overreliance on margins and whitespace, so to mitigate the possiblility of shadows or other artifacting, all images were converted to this color binary
 
-All preprocessing steps were performed on all images, including testing images, since these are quality-based and cleaning steps. There is no conceivable source of data leakage that would usually prevent preprocessing steps from being applied to validation and test sets.
+All preprocessing steps were performed on all images, including testing images, since these are quality-based and cleaning steps. There is no conceivable source of data leakage that would usually discourage preprocessing steps from being applied to validation and test sets.
+
+Some preprocessing and cleaning steps were performed on the supplementary metadata .CSV file `data/Handwriting_Metadata_clean.csv`, and are enumerated in `notebooks/Progress3/DeploymentPrep.ipynb`. The original file contained 13 features; most of which were dropped to leave only the writer id column (wid) and three demographic features: age group, handedness, and gender. Any missing values within these columns were filled in with "unknown".
 
 ### Exploratory Data Analysis (EDA)
 
