@@ -24,7 +24,6 @@ import plotly.express as px
 # ─────────────────────────────────────────────
 # CONFIG  — edit these to match your file paths
 # ─────────────────────────────────────────────
-MODEL_PATH      = "../models/HighRes3.keras"
 TEST_ZIP_PATH   = "../data/testsets/HighRes3_test.zip"
 METADATA_CSV    = "../data/Handwriting_Metadata_clean.csv"
 WEIGHTS_PATH    = "HighRes3_weights.weights.h5"

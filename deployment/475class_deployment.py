@@ -24,7 +24,6 @@ import plotly.express as px
 # ─────────────────────────────────────────────
 # CONFIG  — edit these to match your file paths
 # ─────────────────────────────────────────────
-MODEL_PATH      = "../models/Model5_bw.keras"
 TEST_ZIP_PATH   = "../data/testsets/AllClass_bw_test.zip"
 METADATA_CSV    = "../data/Handwriting_Metadata_clean.csv"
 WEIGHTS_PATH    = "AllClass5_weights.weights.h5"
