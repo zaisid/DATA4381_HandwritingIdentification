@@ -10,9 +10,13 @@ Handwriting author identification is important in forensic science, fraud detect
 ##
 ## Summary of Work Done
 
+![Example images.](images/Poster_Flowchart.png)
+
+Figure 1: Basic workflow flowchart.
+
 ### Data
 
-* Source: [CSAFE Handwriting Database Version 5](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#)
+* Source: data can be downloaded from the [CSAFE Handwriting Database webpage](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#) (version 5)
 * Type: image data, scans of handwriting samples; .CSV file containing metadata on each writer is also included when downloading the data.
 * Size: approx. 5GB, though data was split into 4 zip files of approx. 1GB each to comply with Colab data upload limitations
 * Instances: 12,825 images, 475 classes (authors)
@@ -28,6 +32,11 @@ The dataset contains 12,825 high quality image scans of handwriting samples from
     * 3 repetitions of each prompt were made per session
     * All above aspects are described by image's file name; e.g., `w0028_s03_pWOZ_r02.png` is writer **w0028**'s second repetition of the **WOZ** prompt in the third session
       * The above naming system made filtering and organization simple through python scripts (i.e., `reload_data2.py`).
+     
+![Example images.](images/LND_WOZ_PHR.png)
+
+Figure 2: Examples of each prompt.
+
 
 Majority of images are in grayscale and are rectangular, about 2,500×2,800 pixels, though some are cropped directly to the text regions; both cases caused stretching/compression when images were downsized for modelling. 
 
@@ -42,8 +51,14 @@ Majority of preprocessing involved directory management and organizing image dat
 * Black & White color grading; hard-coding each pixel to be black or white based on a set threshold
   * Images were originally in grayscale, though processed as RGB to fulfill transfer model input requirements (usually needing 3-channel inputs)
   * Mid-stage models' Grad-CAM showed overreliance on margins and whitespace, so to mitigate the possiblility of shadows or other artifacting, all images were converted to this color binary
+  * It was considered whether this would remove information (e.g., whether stroke darkness contributed to predictions) from tge dataset, but was considered a necessary preprocessing step for due diligence toward the cleanliness of the data
 
 All preprocessing steps were performed on all images, including testing images, since these are quality-based and cleaning steps. There is no conceivable source of data leakage that would usually discourage preprocessing steps from being applied to validation and test sets.
+
+![Example images.](images/og_vs_processed2.png)
+
+Figure 3: Examples of unprocessed and processed images.
+
 
 Some preprocessing and cleaning steps were performed on the supplementary metadata .CSV file `data/Handwriting_Metadata_clean.csv`, and are enumerated in `notebooks/Progress3/DeploymentPrep.ipynb`. The original file contained 13 features; most of which were dropped to leave only the writer id column (wid) and three demographic features: age group, handedness, and gender. Any missing values within these columns were filled in with "unknown".
 
@@ -56,21 +71,24 @@ Some preprocessing and cleaning steps were performed on the supplementary metada
   * Initial modelling phase tested ResNet50V2, EfficientNetB0, and MobileNetV2 (these were chosen based on preliminary research into the `keras` library)
   * EfficientNetB0 seemed to balance size and performance and was used in early model trials
 * Final model: MobileNetV2
+  * Primary model choice
   * Backbone frozen
   * Additional GlobalAveragePooling2D and Dense layers with softmaxing added to customize classifier
   * Dropout layer added to mitigate overfitting observed in early models
 * Heavier models: attempted heavier & deeper architectures
   * e.g., DenseNet169 & ConvNeXtTiny
   * These did not match MobileNetV2's performance
+  * Shown in `notebooks/Progress3/OtherCNNs.ipynb`
 * Custom CNN: 4-layer CNN was built and tested though failed to train, likely due to shallow/light architecture
+  * Shown in `notebooks/Progress2/AllClass+CustomCNN.ipynb`
 
 **Training Split(s):** used in accordance with stratified random sampling to ensure each class was equally represented in each set.
 
 * Primary train/validation/test split: 15/6/6 (approx. 60/20/20 ratio)
 * Prompt-based splits: 9/9/9 (33/33/33 ratio)
   * Splitting classes according to prompt (i.e., LND, WOZ, PHR)
-  * Either randomly assigned or consistently organized within train/vaidation/test sets
-* In `AllClass7_NoPHR.ipynb`, where all **PHR** samples(the shortest prompt) are removed from dataset, the train/validation/test split 10/3/5 is used
+  * Either randomly assigned per author or consistently organized within train/vaidation/test sets
+* In `AllClass7_NoPHR.ipynb`, where all **PHR** samples (the shortest prompt) are removed from dataset (leaving 18 samples per class), the split 10/3/5 is used
 
 
 ### Model Training
@@ -88,6 +106,15 @@ Some preprocessing and cleaning steps were performed on the supplementary metada
 ## Results
 
 Accuracy was the main metric chosen for evaluating models since all classes are equally represented and the multiclass nature of the problem made macro-precision or F1-scores less intuitive. Later models were also evaluated based on top-3 accuracy, which checks whether the correct prediction was represented within the top 3 guesses. This metric was chosen since it was more forgiving than raw accuracy, considering there are 475 different "options" to choose from.
+
+Table 1: Metrics across late-stage models.
+
+| | Model #2 | Model #3 | Model #4 | Model #5 | Model #7 |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Train Accuracy** | 88% | 91% | 95% | 82% | 91% | 
+| **Val. Top-3 Acc.** | 83% | 86% | 90% | 74% | 84% |
+| **Test Accuracy** | 67% | 71% | 77% | 56% | 67% | 
+| **Test Top-3 Acc.** | 82% | 86% | 90% | 73% | 84% |
 
 
 ### Model Interpretation
@@ -149,14 +176,9 @@ streamlit run [deployment.py file of choice]
 
 
 ### Software Setup / Requirements
-Google Colab was used for majority of model training for its computational processing resources. Visualizations were completed with matplotlib. Modelling and analysis was done through tensorflow, keras, numpy, and scikit-learn. Data organization was automated with the os, shutil, PIL, tqdm, and zipfile modules. Required and recommended modules are enumerated in `required.txt` as well as at the top of every notebook.
+Google Colab was used for majority of model training for its computational processing resources. Visualizations were completed with matplotlib. Modelling and analysis was done through tensorflow, keras, numpy, and scikit-learn. Data organization was automated with the os, shutil, PIL, tqdm, and zipfile modules. Required and recommended modules are also enumerated as at the top of every notebook.
 
-
-### Data Loading
-
-The data can be downloaded from the [CSAFE Handwriting Database webpage](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#).
-
-
+##
 ## Citations
 
 Crawford, Amy; Ray, Anyesha; Carriquiry, Alicia; Kruse, James; Peterson, Marc (2019): CSAFE Handwriting Database. Iowa State University. Dataset. https://doi.org/10.25380/iastate.10062203.v1
