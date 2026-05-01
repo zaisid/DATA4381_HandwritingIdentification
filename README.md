@@ -23,6 +23,21 @@ Handwriting author identification is important in forensic science, fraud detect
     * 3 repetitions of each prompt were made per session
     * all above aspects are described by image's file name; e.g., `w0028_s03_pWOZ_r02.png` is writer **w0028**'s second repetition of the **WOZ** prompt in the third session
   * a 15/6/6 (approx. 60/20/20 ratio) train/validation/test split count was used on majority of models with stratified sampling to ensure all classes were equally represented in each set
+
+### Exploratory Data Analysis (EDA)
+
+The dataset contains 12,825 high quality image scans of handwriting samples from 475 individuals.
+
+  * 475 classes (authors), 27 images each
+  * Each class is organized as such:
+    * 3 different, conserved prompts (LND, WOZ, PHR) written 9 times each by each author
+    * the 9 instances of each prompt were written across 3 different sessions
+    * 3 repetitions of each prompt were made per session
+    * all above aspects are described by image's file name; e.g., `w0028_s03_pWOZ_r02.png` is writer **w0028**'s second repetition of the **WOZ** prompt in the third session
+      * The above naming system made filtering and organization simple through python scripts (i.e., `reload_data2.py`).
+  * Majority of images are in grayscale
+  * Majority of images were rectangular, about 2,500×2,800 pixels, though some were cropped directly to the text regions,
+
  
 ### Data Preprocessing
 
@@ -32,29 +47,48 @@ Majority of preprocessing involved directory management and organizing image dat
   * The bottom of the image usually held the most empty/white space, so this method did not observably cut off any handwritten text
 * Preemptively downsizing to the model-required resolution (usually 384×384)
 * Black & White color grading; hard-coding each pixel to be black or white based on a set threshold
+  * Images were originally in grayscale, though processed as RGB to fulfill transfer model input requirements (usually needing 3-channel inputs)
   * Mid-stage models' Grad-CAM showed overreliance on margins and whitespace, so to mitigate the possiblility of shadows or other artifacting, all images were converted to this color binary
 
 All preprocessing steps were performed on all images, including testing images, since these are quality-based and cleaning steps. There is no conceivable source of data leakage that would usually discourage preprocessing steps from being applied to validation and test sets.
 
 Some preprocessing and cleaning steps were performed on the supplementary metadata .CSV file `data/Handwriting_Metadata_clean.csv`, and are enumerated in `notebooks/Progress3/DeploymentPrep.ipynb`. The original file contained 13 features; most of which were dropped to leave only the writer id column (wid) and three demographic features: age group, handedness, and gender. Any missing values within these columns were filled in with "unknown".
 
-### Exploratory Data Analysis (EDA)
-
 
 ### Modelling Approach
 
-* Baseline model: started with EfficientNetB0
-* Final moel: MobileNetV2
-* Advanced models: attempted heavier architectures, e.g., ResNet50V2 & ConvNeXtTiny, though these did not yield comparative results
+**Models:** 
+
+* Baseline model: EfficientNetB0
+  * Initial modelling phase tested ResNet50V2, EfficientNetB0, and MobileNetV2 (these were chosen based on preliminary research into the `keras` library)
+  * EfficientNetB0 seemed to balance size and performance and was used in early model trials
+* Final model: MobileNetV2
+  * Backbone frozen
+  * Additional GlobalAveragePooling2D and Dense layers with softmaxing added to customize classifier
+  * Dropout layer added to mitigate overfitting observed in early models
+* Heavier models: attempted heavier & deeper architectures
+  * e.g., DenseNet169 & ConvNeXtTiny
+  * These did not match MobileNetV2's performance
+* Custom CNN: 4-layer CNN was built and tested though failed to train, likely due to shallow/light architecture
+
+\
+**Training Split(s):**
+
+* Primary train/validation/test split: 15/6/6 (approx. 60/20/20 ratio)
+* Prompt-based splits: 9/9/9 (33/33/33 ratio)
+  * Splitting classes according to prompt (i.e., LND, WOZ, PHR)
+  * Either randomly assigned or consistently organized within train/vaidation/test sets
+* In `AllClass7_NoPHR.ipynb`, where all **PHR** samples(the shortest prompt) are removed from dataset, the train/validation/test split 10/3/5 is used
 
 ### Model Training
 
-* Training hyperparameters:
-  * Epochs: 70-100
-  * Batch Size: 64
-  * Image Size: 384×384
-  * Learning Rate: default Adam optimizer (1e-3)
-  * GPU: A100 GPU provided by Google Colab
+* Epochs: 70-100
+* Batch Size: 64
+* Image Size: 384×384
+  * Other sizes were tested, such as 224×224 and 442×442; performance increased with higher resolutions, and 384×384 was chosen for balance between performance and computational costs
+  * A resolution of 442×442 was kept for late-stage 90-class models, such as `HighRes3.keras`
+* Learning Rate: default Adam optimizer (1e-3)
+* Hardware: A100 GPU provided by Google Colab
 
 ## Results
 
@@ -97,9 +131,11 @@ streamlit run [deployment.py file of choice]
 
 ### Contents of Repository
 * **notebooks**: contains current code progress
-  * **previous work**: subfolder containing initial modelling attempts; full documentation can be found in [this repository](https://github.com/zaisid/DATA4380_Vision)
+  * *previous work*: subfolder containing initial modelling attempts; full documentation can be found in [this repository](https://github.com/zaisid/DATA4380_Vision)
+  * *CapstoneI*: subfolder containing baseline models
+  * *Progress 1-3*: subfolders containing mid- and late-stage modelling
 * **data**: contains metadata, modules, and select model-specific test set data
-* **images**: contains graphs and visualizations generated throughout pipeline, including loss/accuracy curves, test outputs, and Grad-CAM maps
+* **images**: contains graphs and visualizations generated throughout pipeline, including loss/accuracy curves, test outputs, and Grad-CAM maps, split into subfolders in similar accordance with the organization of the **notebooks** directory and naming conventions found within pipeline 
 * **models**: contains select models trained throughout different stages of the pipeline; majority are MobileNetV2 architectures
   * `AllClass5_bw.keras`: "final" model trained and tested on black & white color-graded images
   * `AllClass7_noPHR.keras`: updated version of `AllClass5_bw.keras` with smaller training/testing volume after removal of short prompts ("PHR") from dataset
@@ -109,7 +145,7 @@ streamlit run [deployment.py file of choice]
   * `MobileNetV2_gender.keras`: early model where target variable was *gender* rather than authorship
   * `EfficientNet.keras`: baseline model from earliest stages of the project
 * **presentations**: contains all presentations (i.e., slides and posters) made on this project
-* **results**: contains loss and accuracy data over epochs for all trained models as .CSV files
+* **results**: contains loss and accuracy data over epochs for all trained models as .CSV files, split into subfolders in similar accordance with the organization of the **notebooks** directory
 * **deployment**: contains deployment scripts and extra files necessary for running them
 * `requirements.txt`: lists required modules for deployment scripts
 
