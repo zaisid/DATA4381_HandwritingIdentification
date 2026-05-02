@@ -141,6 +141,23 @@ Figure 6: Example test output from Model #5/AllClass5
 
 <br>
 
+Earlier investigation into predicting demographic features (i.e., age, gender, handedness) based on handwriting was attempted and results were found to be trivial. 
+
+Table 2: Metrics across demographics-based models (included in the `models/` directory) and a 90-author model for comparison.
+
+| Target Var. | Train Acc. | Test Acc. | Major Class % |
+| :--- | :---: | :---: | :---: |
+| **Gender**     | 69% | 72% | 60% |
+| **Age**        | 65% | 64% | 33% |
+| **Handedness** | 90% | 89% | 90% |
+| **Authorship** | 86% | 79% | 1.1% |
+
+<br> 
+
+Data for demographic features (outlined in `data/Handwriting_Metadata_clean.csv`) tended to be imbalanced. For example, about 90% of the data was from right-handed people (reflecting real-world approx. ratios), and a model trained to predict handedness yielded 90% accuracy after less than 10 epochs, which is almost equivalent to labelling everyone as right-handed, implying the model was not truly "learning" anything based on the handwriting features. This contributed to focusing on *authorship* as a target variable despite its lack of greater generalizability.
+
+<br>
+
 ### Model Interpretation
 
 Grad-CAM and LIME were applied as explainable AI techniques to aid in the interpretability of late-stage CNNs, which are notoriously black-box architectures. *Grad-CAM* creates a heatmap of model "focus" over the image, depicting what most contributes toward predictions. *LIME* jitters pixel values and evaluates whether changes were beneifical or harmful toward model predictions to highlight privotal areas of importance. These aided in improving the robustness of the model and pipeline.
@@ -148,7 +165,7 @@ Grad-CAM and LIME were applied as explainable AI techniques to aid in the interp
 
 ![](images/CapstoneII/Progress2/xai/model1/lime/model1_nonsquare_lime.png)
 
-Figure 7: Example LIME output from Model #1, prior to squaring/standardizing through cropping and padding whitespace, showing the image getting distorted to accomodate the input requirements of the model, showcasing this early oversight. After this (excluding Model #3), the padding/cropping preprocessing step was added.
+Figure 7: Example LIME output from Model #1, prior to squaring/standardizing through cropping and padding whitespace, showing the image getting distorted to accomodate the input requirements of the model, showcasing this early oversight. After this (excluding Model #3), the padding/cropping preprocessing step was added. In addition, the LIME outputs showed random/jagged/nonsensical areas of importance (outlined in yellow). This pattern was conserved within the majority of later models, and also manifested within white space often, supporting some Grad-CAM insights, yet suggesting LIME is not an optimal method for this problem.
 
 <br>  
 
@@ -162,11 +179,24 @@ Figure 8: Example Grad-CAM map from Model #4/AllClass4, showing correct predicti
 
 Figure 9: Example Grad-CAM map from Model #5/AllClass5_bw, after black & white color grading was administered, closer adherence of model "attention" to text areas. This increases confidence in modelling predictions and grounds them more reliably in the actual data, making the model more trustable.
 
-<br>
+![](images/README_images/AllClass7_gradlime2.png)
+
+Figure 10: LIME output from Model #7/AllClass7_noPHR. Like earlier LIME graphs, areas of importance seem randomly scattered across the bottom of the image, within the whitespace
+
 
 ### Key Insights
 
-* 
+* Demographic features (i.e., age, handedness, gender) were not found to be feasibly predicted based on handwriting characteristics
+* Higher image resolution (i.e., up to 442×442) consistently improved model performance
+* Prompt-based train/validation test splits produced overfitting and lower performance, suggesting the model relies on intra-class consistency and that prompt length meaningfully affects classification performance, a potential concern for real-world generalization
+  * A run with all PHR prompts across all authors sorted into the validation set showed normal performance in the train and test sets and stunted performance in the validation set
+  * Shown in `notebooks/Thirds_Reattempt.ipynb`
+* Grad-CAM revealed that correct predictions are not always grounded in handwriting features; some models focused on page margins and white space, raising red flags relevant to forensic use
+  * While white space and margin size are valid features for handwriting analysis, the model showed an overreliance on these areas of the image, which did not yield reliability
+* Black & white color grading reduced potential confounding elements (e.g., shadows, scanner artifacts) and improved the trustworthiness of model attention maps
+* Top-3 accuracy is a more meaningful evaluation metric for this problem given 475 classes; final models achieved up to 73%—84% top-3 accuracy
+  * Supports use of similar models as decision-support tools for reducing and expediting analysis workloads
+  * Can limit the "suspect" pool
 
 
 ### Conclusion
