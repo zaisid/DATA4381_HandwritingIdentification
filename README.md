@@ -7,6 +7,7 @@ This repository holds an attempt to apply transfer learning techniques and convo
 ## Overview
 Handwriting author identification is important in forensic science, fraud detection, and document authentication. Traditional handwriting analysis depends on expert judgment, which can be subjective and time-consuming. This project explores whether deep-learning provides more consistent and scalable approaches to identifying writers from handwriting samples. Using the CSAFE Handwriting Database, which contains 475 individuals and 12,825 samples, author identification was framed as a multi-class image classification problem. Handwriting images were preprocessed and standardized to 384×384 formatting and divided into training, validation, and test sets. Convolutional neural networks with transfer learning were trained to classify samples. Initial 90-writer subsets achieved test accuracies between 72% and 78%. Larger-scale experiments using all data showed similar performance and achieved top-3 accuracies up to 90%. Because forensic applications require both accuracy and justification, this project emphasized explainable AI. Two explainability methods, Grad-CAM and LIME, were used to interpret predictions. These revealed that models sometimes relied on irrelevant features, such as white space and page margins, rather than handwriting characteristics, suggesting some predictions may not be based on trustworthy reasoning. To mitigate effects of possible confounding features, black & white color grading was applied to all images; models trained with this constraint achieved top-3 accuracies of 73% to 85%. These findings highlight the potential and limitations of AI-based handwriting identification. While deep-learning can improve efficiency, explainability is essential for ensuring systems are reliable for real-world applications.
 
+
 ##
 ## Summary of Work Done
 
@@ -32,11 +33,10 @@ The dataset contains 12,825 high quality image scans of handwriting samples from
     * 3 repetitions of each prompt were made per session
     * All above aspects are described by image's file name; e.g., `w0028_s03_pWOZ_r02.png` is writer **w0028**'s second repetition of the **WOZ** prompt in the third session
       * The above naming system made filtering and organization simple through python scripts (i.e., `reload_data2.py`).
-     
-![Example images.](images/LND_WOZ_PHR.png)
+    
+	![Example images.](images/LND_WOZ_PHR.png)
 
-Figure 2: Examples of each prompt.
-
+	Figure 2: Examples of each prompt (left to right): PHR (proverb/phrase), LND (the London Letter), WOZ (excerpt from *The Wizard of Oz*).
 
 Majority of images are in grayscale and are rectangular, about 2,500×2,800 pixels, though some are cropped directly to the text regions; both cases caused stretching/compression when images were downsized for modelling. 
 
@@ -52,6 +52,7 @@ Majority of preprocessing involved directory management and organizing image dat
   * Images were originally in grayscale, though processed as RGB to fulfill transfer model input requirements (usually needing 3-channel inputs)
   * Mid-stage models' Grad-CAM showed overreliance on margins and whitespace, so to mitigate the possiblility of shadows or other artifacting, all images were converted to this color binary
   * It was considered whether this would remove information (e.g., whether stroke darkness contributed to predictions) from tge dataset, but was considered a necessary preprocessing step for due diligence toward the cleanliness of the data
+* Pixel values were normalized to [-1, 1] using `mobilenet_v2.preprocess_input` 
 
 All preprocessing steps were performed on all images, including testing images, since these are quality-based and cleaning steps. There is no conceivable source of data leakage that would usually discourage preprocessing steps from being applied to validation and test sets.
 
@@ -65,7 +66,9 @@ Some preprocessing and cleaning steps were performed on the supplementary metada
 
 ### Modelling Approach
 
-**Models:** 
+#### **Models:** 
+
+Convolutional neural networks (CNNs) were used for their natural image handling capabilities. Transfer learning techniques utilizing the **tensorflow** and **keras** libraries were harnessed for modelling.
 
 * Baseline model: EfficientNetB0
   * Initial modelling phase tested ResNet50V2, EfficientNetB0, and MobileNetV2 (these were chosen based on preliminary research into the `keras` library)
@@ -78,12 +81,15 @@ Some preprocessing and cleaning steps were performed on the supplementary metada
 * Heavier models: attempted heavier & deeper architectures
   * e.g., DenseNet169 & ConvNeXtTiny
   * These did not match MobileNetV2's performance
+    ![](images/CapstoneII/Progress3/graphs/ResNet_90_lossacc_graph.png)
+
+    Figure 4: Loss & accuracy curves from ResNet50 model, showing low training accuracy.
   * Shown in `notebooks/Progress3/OtherCNNs.ipynb`
 * Custom CNN: 4-layer CNN was built and tested though failed to train, likely due to shallow/light architecture
   * Shown in `notebooks/Progress2/AllClass+CustomCNN.ipynb`
 
-**Training Split(s):** used in accordance with stratified random sampling to ensure each class was equally represented in each set.
-
+#### **Training Split(s):** 
+* Used in accordance with stratified random sampling to ensure each class was equally represented in each set.
 * Primary train/validation/test split: 15/6/6 (approx. 60/20/20 ratio)
 * Prompt-based splits: 9/9/9 (33/33/33 ratio)
   * Splitting classes according to prompt (i.e., LND, WOZ, PHR)
@@ -97,6 +103,10 @@ Some preprocessing and cleaning steps were performed on the supplementary metada
 * Batch Size: 64
 * Image Size: 384×384
   * Other sizes were tested, such as 224×224 and 442×442; performance increased with higher resolutions, and 384×384 was chosen for balance between performance and computational costs
+    ![](images/README_images/comp_lossacc_graph.png)
+
+    Figure 5: Accuracy curve comparing model performance at different resolutions.
+
   * A resolution of 442×442 was kept for late-stage 90-class models, such as `HighRes3.keras`
 * Learning Rate: default Adam optimizer (1e-3)
 * Hardware: A100 GPU provided by Google Colab
@@ -111,18 +121,52 @@ Table 1: Metrics across late-stage models.
 
 | | Model #2 | Model #3 | Model #4 | Model #5 | Model #7 |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Train Accuracy** | 88% | 91% | 95% | 82% | 91% | 
+| **Train Accuracy**  | 88% | 91% | 95% | 82% | 91% | 
 | **Val. Top-3 Acc.** | 83% | 86% | 90% | 74% | 84% |
-| **Test Accuracy** | 67% | 71% | 77% | 56% | 67% | 
-| **Test Top-3 Acc.** | 82% | 86% | 90% | 73% | 84% |
+| **Test Accuracy**   | 67% | 71% | 77% | 56% | 67% | 
+| **Test Top-3 Acc.** | 82% | 86% | 90% | 73% | 84% | 
 
+<br> 
+
+As the above table shows, models performed well. Considering they are significantly greater than the random rate (approx. 0.2%), this suggests models are able to pick up nontrivial signals toward authorship identification. This supports the use of AI methods in this sphere of document analysis.
+
+<br> 
+
+
+![](images/README_images/testgrid_allclass5_3.png)
+
+Figure 6: Example test output from Model #5/AllClass5
+
+*(Note: reflects raw accuracy scores and does not score according to top-3 accuracy)*.
+
+<br>
 
 ### Model Interpretation
 
+Grad-CAM and LIME were applied as explainable AI techniques to aid in the interpretability of late-stage CNNs, which are notoriously black-box architectures. *Grad-CAM* creates a heatmap of model "focus" over the image, depicting what most contributes toward predictions. *LIME* jitters pixel values and evaluates whether changes were beneifical or harmful toward model predictions to highlight privotal areas of importance. These aided in improving the robustness of the model and pipeline.
 
+
+![](images/CapstoneII/Progress2/xai/model1/lime/model1_nonsquare_lime.png)
+
+Figure 7: Example LIME output from Model #1, prior to squaring/standardizing through cropping and padding whitespace, showing the image getting distorted to accomodate the input requirements of the model, showcasing this early oversight. After this (excluding Model #3), the padding/cropping preprocessing step was added.
+
+<br>  
+
+![](images/README_images/model4_1.png)
+
+Figure 8: Example Grad-CAM map from Model #4/AllClass4, showing correct predictions despite not "looking" at the text regions, casting doubt on the predictive logic of the model. This led to the incorporation of black & white color grading.
+
+<br>
+
+![](images/README_images/AllClass5_gradcam2.png)
+
+Figure 9: Example Grad-CAM map from Model #5/AllClass5_bw, after black & white color grading was administered, closer adherence of model "attention" to text areas. This increases confidence in modelling predictions and grounds them more reliably in the actual data, making the model more trustable.
+
+<br>
 
 ### Key Insights
 
+* 
 
 
 ### Conclusion
@@ -173,6 +217,7 @@ streamlit run [deployment.py file of choice]
 * **results**: contains loss and accuracy data over epochs for all trained models as .CSV files, split into subfolders in similar accordance with the organization of the **notebooks** directory
 * **deployment**: contains deployment scripts and extra files necessary for running them
 * `requirements.txt`: lists required modules for deployment scripts
+
 
 
 ### Software Setup / Requirements
