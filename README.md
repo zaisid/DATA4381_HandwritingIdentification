@@ -38,9 +38,9 @@ The dataset contains 12,825 high quality image scans of handwriting samples from
     * All above aspects are described by image's file name; e.g., `w0028_s03_pWOZ_r02.png` is writer **w0028**'s second repetition of the **WOZ** prompt in the third session
       * The above naming system made filtering and organization simple through python scripts (i.e., `reload_data2.py`).
     
-	![LND PHR WOZ](images/README_images/LND_WOZ_PHR.png)
+		![LND PHR WOZ](images/README_images/LND_WOZ_PHR.png)
 
-	Figure 2: Examples of each prompt (left to right): PHR (proverb/phrase), LND (the London Letter), WOZ (excerpt from *The Wizard of Oz*).
+		Figure 2: Examples of each prompt (left to right): PHR (proverb/phrase), LND (the London Letter), WOZ (excerpt from *The Wizard of Oz*).
 
 Majority of images are in grayscale and are rectangular, about 2,500×2,800 pixels, though some are cropped directly to the text regions; both cases caused stretching/compression when images were downsized for modelling. 
 
