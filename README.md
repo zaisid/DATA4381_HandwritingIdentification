@@ -3,10 +3,12 @@
 ## Motivation
 This repository holds an attempt to apply transfer learning techniques and convolutional neural nets (CNNs) to model and predict the identity of the writer of a given handwritten image from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#). This is intended to give insight into the potential applications of deep learning models in handwriting analysis with broad use in fields such as forensics, fraud detection, and historical document analysis.
 
+<br> 
 
 ## Overview
 Handwriting author identification is important in forensic science, fraud detection, and document authentication. Traditional handwriting analysis depends on expert judgment, which can be subjective and time-consuming. This project explores whether deep-learning provides more consistent and scalable approaches to identifying writers from handwriting samples. Using the CSAFE Handwriting Database, which contains 475 individuals and 12,825 samples, author identification was framed as a multi-class image classification problem. Handwriting images were preprocessed and standardized to 384×384 formatting and divided into training, validation, and test sets. Convolutional neural networks with transfer learning were trained to classify samples. Initial 90-writer subsets achieved test accuracies between 72% and 78%. Larger-scale experiments using all data showed similar performance and achieved top-3 accuracies up to 90%. Because forensic applications require both accuracy and justification, this project emphasized explainable AI. Two explainability methods, Grad-CAM and LIME, were used to interpret predictions. These revealed that models sometimes relied on irrelevant features, such as white space and page margins, rather than handwriting characteristics, suggesting some predictions may not be based on trustworthy reasoning. To mitigate effects of possible confounding features, black & white color grading was applied to all images; models trained with this constraint achieved top-3 accuracies of 73% to 85%. These findings highlight the potential and limitations of AI-based handwriting identification. While deep-learning can improve efficiency, explainability is essential for ensuring systems are reliable for real-world applications.
 
+<br> 
 
 ##
 ## Summary of Work Done
@@ -21,6 +23,8 @@ Figure 1: Basic workflow flowchart.
 * Type: image data, scans of handwriting samples; .CSV file containing metadata on each writer is also included when downloading the data.
 * Size: approx. 5GB, though data was split into 4 zip files of approx. 1GB each to comply with Colab data upload limitations
 * Instances: 12,825 images, 475 classes (authors)
+
+<br>
 
 ### Exploratory Data Analysis (EDA)
 
@@ -40,6 +44,7 @@ The dataset contains 12,825 high quality image scans of handwriting samples from
 
 Majority of images are in grayscale and are rectangular, about 2,500×2,800 pixels, though some are cropped directly to the text regions; both cases caused stretching/compression when images were downsized for modelling. 
 
+ <br> 
  
 ### Data Preprocessing
 
@@ -63,6 +68,7 @@ Figure 3: Examples of unprocessed and processed images.
 
 Some preprocessing and cleaning steps were performed on the supplementary metadata .CSV file `data/Handwriting_Metadata_clean.csv`, and are enumerated in `notebooks/Progress3/DeploymentPrep.ipynb`. The original file contained 13 features; most of which were dropped to leave only the writer id column (wid) and three demographic features: age group, handedness, and gender. Any missing values within these columns were filled in with "unknown".
 
+<br> 
 
 ### Modelling Approach
 
@@ -81,6 +87,7 @@ Convolutional neural networks (CNNs) were used for their natural image handling 
 * Heavier models: attempted heavier & deeper architectures
   * e.g., DenseNet169 & ConvNeXtTiny
   * These did not match MobileNetV2's performance
+
     ![ResNet lossacc](images/CapstoneII/Progress3/graphs/ResNet_90_lossacc_graph.png)
 
     Figure 4: Loss & accuracy curves from ResNet50 model, showing low training accuracy.
@@ -96,6 +103,7 @@ Convolutional neural networks (CNNs) were used for their natural image handling 
   * Either randomly assigned per author or consistently organized within train/vaidation/test sets
 * In `AllClass7_NoPHR.ipynb`, where all **PHR** samples (the shortest prompt) are removed from dataset (leaving 18 samples per class), the split 10/3/5 is used
 
+<br> 
 
 ### Model Training
 
@@ -110,7 +118,14 @@ Convolutional neural networks (CNNs) were used for their natural image handling 
   * A resolution of 442×442 was kept for late-stage 90-class models, such as `HighRes3.keras`
 * Learning Rate: default Adam optimizer (1e-3)
 * Hardware: A100 GPU provided by Google Colab
+* "Typical" loss & accuracy curve
+	![model5 lossacc](images/CapstoneII/Progress3/graphs/AllClass7_lossacc_graph.png)
 
+	Figure 6: Loss & accuracy curve of Model #7, showing top-3 accuracy as well; most late-stage models have similar curves.
+
+*All loss and accuracy training data can be found under the `results/` directory as .CSV files.*
+
+<br> 
 
 ##
 ## Results
@@ -135,7 +150,7 @@ As the above table shows, models performed well. Considering they are significan
 
 ![model5 test output](images/README_images/testgrid_allclass5_3.png)
 
-Figure 6: Example test output from Model #5/AllClass5
+Figure 7: Example test output from Model #5/AllClass5
 
 *(Note: reflects raw accuracy scores and does not score according to top-3 accuracy)*.
 
@@ -165,24 +180,27 @@ Grad-CAM and LIME were applied as explainable AI techniques to aid in the interp
 
 ![](images/CapstoneII/Progress2/xai/model1/lime/model1_nonsquare_lime.png)
 
-Figure 7: Example LIME output from Model #1, prior to squaring/standardizing through cropping and padding whitespace, showing the image getting distorted to accomodate the input requirements of the model, showcasing this early oversight. After this (excluding Model #3), the padding/cropping preprocessing step was added. In addition, the LIME outputs showed random/jagged/nonsensical areas of importance (outlined in yellow). This pattern was conserved within the majority of later models, and also manifested within white space often, supporting some Grad-CAM insights, yet suggesting LIME is not an optimal method for this problem.
+Figure 8: Example LIME output from Model #1, prior to squaring/standardizing through cropping and padding whitespace, showing the image getting distorted to accomodate the input requirements of the model, showcasing this early oversight. After this (excluding Model #3), the padding/cropping preprocessing step was added. In addition, the LIME outputs showed random/jagged/nonsensical areas of importance (outlined in yellow). This pattern was conserved within the majority of later models, and also manifested within white space often, supporting some Grad-CAM insights, yet suggesting LIME is not an optimal method for this problem.
 
 <br>  
 
 ![](images/README_images/model4_1.png)
 
-Figure 8: Example Grad-CAM map from Model #4/AllClass4, showing correct predictions despite not "looking" at the text regions, casting doubt on the predictive logic of the model. This led to the incorporation of black & white color grading.
+Figure 9: Example Grad-CAM map from Model #4/AllClass4, showing correct predictions despite not "looking" at the text regions, casting doubt on the predictive logic of the model. This led to the incorporation of black & white color grading.
 
 <br>
 
 ![](images/README_images/AllClass5_gradcam2.png)
 
-Figure 9: Example Grad-CAM map from Model #5/AllClass5_bw, after black & white color grading was administered, closer adherence of model "attention" to text areas. This increases confidence in modelling predictions and grounds them more reliably in the actual data, making the model more trustable.
+Figure 10: Example Grad-CAM map from Model #5/AllClass5_bw, after black & white color grading was administered, closer adherence of model "attention" to text areas. This increases confidence in modelling predictions and grounds them more reliably in the actual data, making the model more trustable.
 
-![](images/README_images/AllClass7_gradlime2.png)
+<br>
 
-Figure 10: LIME output from Model #7/AllClass7_noPHR. Like earlier LIME graphs, areas of importance seem randomly scattered across the bottom of the image, within the whitespace
+![](images/README_images/AllClass7_gradlime1.png)
 
+Figure 11: LIME output from Model #7/AllClass7_noPHR. Like earlier LIME graphs, areas of importance seem randomly scattered across the bottom of the image, within the whitespace, though "positive" areas highlighted in green are more represented as well.
+
+<br>
 
 ### Key Insights
 
@@ -198,22 +216,32 @@ Figure 10: LIME output from Model #7/AllClass7_noPHR. Like earlier LIME graphs, 
   * Supports use of similar models as decision-support tools for reducing and expediting analysis workloads
   * Can limit the "suspect" pool
 
+<br>
 
 ### Conclusion
 
+This project demonstrated that MobileNetV2 with transfer learning can identify handwriting authors from scanned samples at a rate far exceeding chance, reaching top-3 test accuracies between 73% and 90% across a 475-class problem, providing meaningful support for the use of deep learning in document analysis workflows. However, predictive performance alone proved insufficient as a measure of model quality. XAI analysis via Grad-CAM revealed that correct predictions were not always grounded in genuine handwriting features, with earlier models showing overreliance on page margins and whitespace. This emphasizes, for forensic and other high-stakes applications, that how a model reaches a prediction matters as much as whether it is correct. Incorporating black & white color grading as a preprocessing step meaningfully improved the interpretability of model attention, basing predictions more reliably in the actual handwriting. Overall, this pipeline establishes a strong foundation and proof-of-concept for AI-assisted handwriting identification, while also highlighting that explainability must be a first-class concern in any forensic application of machine learning.
 
+<br> 
 
 ### Future Work
 
 As, in its current form, the setup of the pipeline makes it a closed-set problem (i.e., writers outside of the training set cannot be predicted without additional appropriate training data), shifting focus from CNNs to Siamese Neural Networks (SNNs) is the next frame of focus. SNNs are designed to take two inputs and compare them against each other, and with all that was learned from the current pipeline regarding data cleaning and proper image handling specific to handwriting analysis, this would be the natural progression to testing the utility of deep learning and AI applications in digital forensics and other such spheres, and "opening" this problem (i.e., making it more generalizable). Other aspects to dive deeper into are more extreme augmentations and image processing steps. Augmentations have not been applied to any finalized models since, whenever executed, they worsened performance. However, applying different forms of augmentation (such as cropping to focus on words or letters rather than entire paragraphs) is yet to be tested. This would also serve to yield more data and inflate the training set.
 
+<br> 
+
 ##
 ## Repository Structure Explanation
 
 ### How to Run
-**Generating final model**: Download data from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#). Clone this repository, or download `BW_coloring.ipynb`. It is recommended to execute code virtually, such as with Google Colab, ensuring dependencies, such as `reload_data2.py`, are within the same/virtual directory. Run notebook and download .keras model and other output files; XAI interpretations are built into this notebook. Previous models can be trained and generated in the same way with their respective notebook(s).
+#### **Generating final model:**
 
-**Deployment**: Two browser-based local deployment versions are available.
+Download data from the [CSAFE Handwriting Database](https://data.csafe.iastate.edu/HandwritingDatabase/?saveQueryContent=handwritingdbstudy-%3E++%28Writer_ID+%3C%3D+%270090%27%29+&files%5B%5D=&study=handwritingdbstudy&left-operands-parameters-name=Writer_ID&filter-operators-name=%3D&right-operands-parameters-value=Writer_ID&paramValues=0009#). Clone this repository, or download `BW_coloring.ipynb` (or `AllClass7_NoPHR.ipynb` or `HighRes_Reattempt+Comparison.ipynb`) from the `notebooks/` directory. It is recommended to execute code virtually, such as with Google Colab, ensuring dependencies, such as `data/reload_data2.py`, are within the same/virtual directory. Run notebook and download .keras model and other output files; XAI interpretations are built into this notebook and require the `data/Handwriting_XAI3.ipynb` module to run. Previous models can be trained and generated in the same way with their respective notebook(s).
+
+
+#### **Deployment:**
+
+Two browser-based local deployment versions are available.
 *  `475class_deployment.py` showcases a model trained on all authors
 *  `90class_deployment.py` showcases a subset of authors with a higher accuracy model
 
@@ -227,6 +255,7 @@ cd deployment
 streamlit run [deployment.py file of choice]
 ```
 
+<br>
 
 ### Contents of Repository
 * **notebooks**: contains current code progress
@@ -248,10 +277,12 @@ streamlit run [deployment.py file of choice]
 * **deployment**: contains deployment scripts and extra files necessary for running them
 * `requirements.txt`: lists required modules for deployment scripts
 
-
+<br>
 
 ### Software Setup / Requirements
 Google Colab was used for majority of model training for its computational processing resources. Visualizations were completed with matplotlib. Modelling and analysis was done through tensorflow, keras, numpy, and scikit-learn. Data organization was automated with the os, shutil, PIL, tqdm, and zipfile modules. Required and recommended modules are also enumerated as at the top of every notebook.
+
+<br> 
 
 ##
 ## Citations
