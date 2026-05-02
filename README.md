@@ -114,14 +114,13 @@ Convolutional neural networks (CNNs) were used for their natural image handling 
     ![resolution comparison lossacc](images/README_images/comp_lossacc_graph.png)
 
     Figure 5: Accuracy curve comparing model performance at different resolutions.
-
   * A resolution of 442×442 was kept for late-stage 90-class models, such as `HighRes3.keras`
 * Learning Rate: default Adam optimizer (1e-3)
 * Hardware: A100 GPU provided by Google Colab
 * "Typical" loss & accuracy curve
 	![model5 lossacc](images/CapstoneII/Progress3/graphs/AllClass7_lossacc_graph.png)
 
-	Figure 6: Loss & accuracy curve of Model #7, showing top-3 accuracy as well; most late-stage models have similar curves.
+Figure 6: Loss & accuracy curve of Model #7, showing top-3 accuracy as well; most late-stage models have similar curves.
 
 *All loss and accuracy training data can be found under the `results/` directory as .CSV files.*
 
