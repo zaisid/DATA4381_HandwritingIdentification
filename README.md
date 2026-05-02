@@ -11,7 +11,7 @@ Handwriting author identification is important in forensic science, fraud detect
 ##
 ## Summary of Work Done
 
-![Example images.](images/Poster_Flowchart.png)
+![Flowchart](images/README_images/Poster_Flowchart.png)
 
 Figure 1: Basic workflow flowchart.
 
@@ -34,7 +34,7 @@ The dataset contains 12,825 high quality image scans of handwriting samples from
     * All above aspects are described by image's file name; e.g., `w0028_s03_pWOZ_r02.png` is writer **w0028**'s second repetition of the **WOZ** prompt in the third session
       * The above naming system made filtering and organization simple through python scripts (i.e., `reload_data2.py`).
     
-	![Example images.](images/LND_WOZ_PHR.png)
+	![LND PHR WOZ](images/README_images/LND_WOZ_PHR.png)
 
 	Figure 2: Examples of each prompt (left to right): PHR (proverb/phrase), LND (the London Letter), WOZ (excerpt from *The Wizard of Oz*).
 
@@ -56,7 +56,7 @@ Majority of preprocessing involved directory management and organizing image dat
 
 All preprocessing steps were performed on all images, including testing images, since these are quality-based and cleaning steps. There is no conceivable source of data leakage that would usually discourage preprocessing steps from being applied to validation and test sets.
 
-![Example images.](images/og_vs_processed2.png)
+![OG vs. Preprocessed](images/README_images/og_vs_processed2.png)
 
 Figure 3: Examples of unprocessed and processed images.
 
@@ -81,7 +81,7 @@ Convolutional neural networks (CNNs) were used for their natural image handling 
 * Heavier models: attempted heavier & deeper architectures
   * e.g., DenseNet169 & ConvNeXtTiny
   * These did not match MobileNetV2's performance
-    ![](images/CapstoneII/Progress3/graphs/ResNet_90_lossacc_graph.png)
+    ![ResNet lossacc](images/CapstoneII/Progress3/graphs/ResNet_90_lossacc_graph.png)
 
     Figure 4: Loss & accuracy curves from ResNet50 model, showing low training accuracy.
   * Shown in `notebooks/Progress3/OtherCNNs.ipynb`
@@ -103,7 +103,7 @@ Convolutional neural networks (CNNs) were used for their natural image handling 
 * Batch Size: 64
 * Image Size: 384×384
   * Other sizes were tested, such as 224×224 and 442×442; performance increased with higher resolutions, and 384×384 was chosen for balance between performance and computational costs
-    ![](images/README_images/comp_lossacc_graph.png)
+    ![resolution comparison lossacc](images/README_images/comp_lossacc_graph.png)
 
     Figure 5: Accuracy curve comparing model performance at different resolutions.
 
@@ -133,7 +133,7 @@ As the above table shows, models performed well. Considering they are significan
 <br> 
 
 
-![](images/README_images/testgrid_allclass5_3.png)
+![model5 test output](images/README_images/testgrid_allclass5_3.png)
 
 Figure 6: Example test output from Model #5/AllClass5
 
