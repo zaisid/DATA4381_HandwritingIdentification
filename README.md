@@ -86,7 +86,7 @@ Convolutional neural networks (CNNs) were used for their natural image handling 
   * Dropout layer added to mitigate overfitting observed in early models
 * Heavier models: attempted heavier & deeper architectures
   * e.g., DenseNet169 & ConvNeXtTiny
-  * These did not match MobileNetV2's performance
+  * These did not match MobileNetV2's performance, or were not as trustable when analyzed with XAI techniques
 
     ![ResNet lossacc](images/CapstoneII/Progress3/graphs/ResNet_90_lossacc_graph.png)
 
